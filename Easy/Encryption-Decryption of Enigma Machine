@@ -1,0 +1,85 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/encryptiondecryption-of-enigma-machine
+# 
+# During World War II, the Germans were using an encryption code called Enigma – which was basically an encryption machine that encrypted messages for transmission. The Enigma code went many years unbroken. Here's How the basic machine works:
+# 
+# First Caesar shift is applied using an incrementing number:
+# If String is AAA and starting number is 4 then output will be EFG.
+# 
+# A + 4 = E
+# A + 4 + 1 = F
+# A + 4 + 1 + 1 = G
+# 
+# 
+# Now map EFG to first ROTOR such as:
+# 
+# ABCDEFGHIJKLMNOPQRSTUVWXYZ
+# BDFHJLCPRTXVZNYEIWGAKMUSQO
+# 
+# So EFG becomes JLC. Then it is passed through 2 more rotors to get the final value.
+# 
+# If the second ROTOR is AJDKSIRUXBLHWTMCQGZNPYFVOE, we apply the substitution step again thus:
+# 
+# ABCDEFGHIJKLMNOPQRSTUVWXYZ
+# AJDKSIRUXBLHWTMCQGZNPYFVOE
+# 
+# So JLC becomes BHD.
+# 
+# If the third ROTOR is EKMFLGDQVZNTOWYHXUSPAIBRCJ, then the final substitution is:
+# 
+# ABCDEFGHIJKLMNOPQRSTUVWXYZ
+# EKMFLGDQVZNTOWYHXUSPAIBRCJ
+# 
+# So BHD becomes KQF.
+# 
+# Final output is sent via Radio Transmitter.
+# =============================================================================
+
+def shifting(message, shift, operation):
+    result = ""
+    if operation == "ENCODE":
+        for i in range(len(message)):
+            pos = ord(message[i]) - ord('A') + shift + i
+            result += chr(ord('A') + pos%(ord('Z')-ord('A')+1))
+
+    elif operation == "DECODE":
+        for i in range(len(message)):
+            pos = ord('Z') - ord(message[i]) + shift + i
+            result += chr(ord('Z') - pos%(ord('Z')-ord('A')+1))
+    else:
+        return None
+    return result
+
+def rotor_mapping(message, rotor, operation):
+    result = ""
+    if operation == "ENCODE": 
+        for char in message:
+            result += rotor[ord(char) - ord('A')]
+    elif operation == "DECODE":
+        for char in message:
+            result += chr(ord('A') + rotor.index(char))
+    else:
+        return None
+    return result
+
+def encoding(message, shift, rotors, operation):
+    message = shifting(message, shift, operation)
+    for rotor in rotors:
+        message = rotor_mapping(message, rotor, operation)
+    return message
+
+def decoding(message, shift, rotors, operation):
+    for rotor in rotors[::-1]:
+        message = rotor_mapping(message, rotor, operation)
+    message = shifting(message, shift, operation)
+    return message
+
+operation = input()
+shift = int(input())
+rotors = [input() for rotor in range(3)]
+message = input()
+
+if operation == "ENCODE":
+    print(encoding(message, shift, rotors, operation))
+else:
+    print(decoding(message, shift, rotors, operation))
