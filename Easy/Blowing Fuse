@@ -1,0 +1,51 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/blowing-fuse
+# 
+# You are going to write a program to predict whether a specific usage pattern of electrical appliances will cause the main fuse to blow.
+# 
+# You have three pieces of data.
+# 1. There are n appliances in a room, each of them has an electrical current consumption value.
+# 2. A usage pattern. You will click the power buttons of a list of appliances in a sequence, at most m clicks. Each click on a button will toggle the power status, which means when the power is OFF, a click will turn it ON. Clicking it again will turn it OFF.
+# 3. The capacity of the main fuse c in amperes [A].
+# 
+# The fuse will be blown if the sum of the consumed current of turned-on devices at some point exceeds the capacity of the main fuse c.
+# 
+# At the beginning, all appliances are OFF.
+# =============================================================================
+
+device_specs = []
+sequence_ids = []
+consumption = 0
+max_consumption = 0
+sequence_count = 0
+
+n, m, c = [int(i) for i in input().split()]
+for i in input().split():
+    device_specs.append([int(i), 0])
+for i in input().split():
+    sequence_ids.append(int(i))
+
+for id in sequence_ids:
+    if device_specs[id-1][1] == 0:
+        if consumption + device_specs[id-1][0] <= c:
+            consumption += device_specs[id-1][0]
+            device_specs[id-1][1] = 1
+        else:
+            break
+    else:
+        if consumption - device_specs[id-1][0] >= 0:
+            consumption -= device_specs[id-1][0]
+        else:
+            consumption = 0
+        device_specs[id-1][1] = 0
+    
+    if consumption > max_consumption:
+        max_consumption = consumption
+    
+    sequence_count += 1
+
+if sequence_count == m:
+    print("Fuse was not blown.")
+    print(f"Maximal consumed current was {max_consumption} A.")
+else:
+    print("Fuse was blown.")
