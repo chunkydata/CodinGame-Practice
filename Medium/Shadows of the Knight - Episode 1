@@ -1,0 +1,71 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/shadows-of-the-knight-episode-1
+# 
+# The Goal:
+#     
+# Batman will look for the hostages on a given building by jumping from one window to another using his grapnel gun.
+# Batman's goal is to jump to the window where the hostages are located in order to disarm the bombs.
+# Unfortunately he has a limited number of jumps before the bombs go off...
+# 
+# Rules:
+#     
+# Before each jump, the heat-signature device will provide Batman with the direction of the bombs
+# based on Batman current position:
+# 
+# U (Up)
+# UR (Up-Right)
+# R (Right)
+# DR (Down-Right)
+# D (Down)
+# DL (Down-Left)
+# L (Left)
+# UL (Up-Left)
+# 
+# 
+# Your mission is to program the device so that it indicates the location of the next window
+# Batman should jump to in order to reach the bombs' room as soon as possible.
+# 
+# Buildings are represented as a rectangular array of windows, the window in the top left corner of the building
+# is at index (0,0).
+# =============================================================================
+
+import math
+
+# w: width of the building.
+# h: height of the building.
+w, h = [int(i) for i in input().split()]
+n = int(input())  # maximum number of turns before game over.
+x, y = [int(i) for i in input().split()]
+
+# sides of the landing area
+left = 0
+right = w
+top = 0
+bottom = h
+
+def landing_area(x, y, bomb_dir, left, right, top, bottom):
+    for ele in bomb_dir:
+        if ele == 'U':
+            bottom = y-1
+        elif ele == 'R':
+            left = x+1
+        elif ele == 'D':
+            top = y+1
+        elif ele == 'L':
+            right = x-1
+    return left, right, top, bottom
+
+def landing_pos(left, right, top, bottom):
+    x = math.floor((left + right)/2)
+    y = math.floor((top + bottom)/2)
+    return x, y
+
+# game loop
+while True:
+    bomb_dir = input()  # the direction of the bombs from batman's current location (U, UR, R, DR, D, DL, L or UL)
+
+    left, right, top, bottom = landing_area(x, y, bomb_dir, left, right, top, bottom)
+    x, y = landing_pos(left, right, top, bottom)
+
+    # the location of the next window Batman should jump to.
+    print(x, y)
