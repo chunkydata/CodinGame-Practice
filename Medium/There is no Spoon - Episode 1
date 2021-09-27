@@ -1,0 +1,59 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/there-is-no-spoon-episode-1
+# 
+# The Goal:
+#
+# The game is played on a rectangular grid with a given size. Some cells contain power nodes. The rest of the cells are empty.
+# 
+# The goal is to find, when they exist, the horizontal and vertical neighbors of each node.
+# 
+# Rules:
+#
+# To do this, you must find each (x1,y1) coordinates containing a node, and display the (x2,y2) coordinates of the next node to the right, and the (x3,y3) coordinates of the next node to the bottom within the grid.
+# 
+# If a neighbor does not exist, you must output the coordinates -1 -1 instead of (x2,y2) and/or (x3,y3).
+# 
+# You lose if:
+# 
+#     You give an incorrect neighbor for a node.
+#     You give the neighbors for an empty cell.
+#     You compute the same node twice.
+#     You forget to compute the neighbors of a node.
+# =============================================================================
+
+import numpy as np
+
+width = int(input())  # the number of cells on the X axis
+height = int(input())  # the number of cells on the Y axis
+
+grid = np.zeros((height, width), dtype=int)
+
+for i in range(height):
+    line = input()  # width characters, each either 0 or .
+    for j in range(width):
+        if line[j] == '0':
+            grid[i,j] = 1
+
+grid = grid.T
+nodes = np.argwhere(grid == 1)
+
+for node in nodes:
+    x = node[0]
+    y = node[1]
+    neighbours = [x, y]
+
+    for i, ele in enumerate(grid[:,y]):
+        if i > x and ele == 1:
+            neighbours += [i, y]
+            break
+    else:
+        neighbours += [-1, -1]
+
+    for j, ele in enumerate(grid[x,:]):
+        if j > y and ele == 1:
+            neighbours += [x, j]
+            break
+    else:
+        neighbours += [-1, -1]
+    
+    print(' '.join(str(neighbour) for neighbour in neighbours))
