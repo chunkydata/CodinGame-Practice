@@ -1,0 +1,71 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/aneo
+# 
+# Goal:
+# 
+# You enter a section of road and you plan to rest entirely on your cruise control to cross the area without having to stop or slow down.
+# 
+# The goal is to find the maximum speed (off speeding) that will allow you to cross all the traffic lights to green.
+# 
+# Warning: You can not cross a traffic light the second it turns red !
+# 
+# Your vehicle enters the zone directly at the speed programmed on the cruise control which ensures that it does not change anymore.
+# 
+# 
+# Input:
+#     
+# Line 1: An integer speed for the maximum speed allowed on the portion of the road (in km / h).
+# 
+# Line 2: An integer lightCount for the number of traffic lights on the road.
+# 
+# lightCount next lines:
+# - An integer distance representing the distance of the traffic light from the starting point (in meters).
+# - An integer duration representing the duration of the traffic light on each color.
+# 
+# A traffic light alternates a period of duration seconds in green and then duration seconds in red.
+# All traffic lights turn green at the same time as you enter the area.
+# 
+# 
+# Output:
+#     
+# Line 1: The integer speed (km / h) as high as possible that cross all the green lights without committing speeding.
+# 
+# 
+# Constraints:
+#     
+# 1 ≤ speed ≤ 200
+# 1 ≤ lightCount ≤ 9999
+# 1 ≤ distance ≤ 99999
+# 1 ≤ duration ≤ 9999
+# =============================================================================
+
+def is_green(speed, light):
+    distance = light[0]
+    duration = light[1]
+    if (((18*distance)/(5*speed))//duration)%2 == 0:
+        return True
+    else:
+        return False
+
+def not_all_green(speed, lights):
+    for light in lights:
+        if not is_green(speed, light):
+            return True
+    return False
+
+max_speed = int(input())
+light_count = int(input())
+lights = []
+
+for i in range(light_count):
+    distance, duration = [int(j) for j in input().split()]
+    lights.append([distance, duration])
+    
+while not_all_green(max_speed, lights):
+    for light in lights:
+        for speed in range(max_speed, 1, -1):
+            if is_green(speed, light):
+                max_speed = speed
+                break
+
+print(max_speed)
