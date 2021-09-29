@@ -1,0 +1,65 @@
+# =============================================================================
+# https://www.codingame.com/ide/puzzle/defibrillators
+# 
+# The Goal:
+#     
+# The city of Montpellier has equipped its streets with defibrillators to help save victims of cardiac arrests.
+# 
+# Based on the data we provide in the tests, write a program that will allow users to find the defibrillator nearest
+# to their location using their mobile phone.
+# 
+# Rules:
+#     
+# The input data you require for your program is provided in text format.
+# This data is comprised of lines, each of which represents a defibrillator.
+# Each defibrillator is represented by the following fields:
+# 
+#     A number identifying the defibrillator
+#     Name
+#     Address
+#     Contact Phone number
+#     Longitude (degrees)
+#     Latitude (degrees)
+# 
+# These fields are separated by a semicolon (;).
+# 
+# Beware: the decimal numbers use the comma (,) as decimal separator. Remember to turn the comma (,) into dot (.)
+# if necessary in order to use the data in your program.
+# 
+# The program will display the name of the defibrillator located the closest to the user’s position.
+# This position is given as input to the program.
+# =============================================================================
+
+import pandas as pd
+import numpy as np
+
+titles = [
+    'id',
+    'name',
+    'address',
+    'contact',
+    'longitude',
+    'latitude'
+]
+
+df_defib = pd.DataFrame(columns=titles)
+
+lon = float(input().replace(',','.'))
+lat = float(input().replace(',','.'))
+n = int(input())
+
+for i in range(n):
+    str_defib = input()
+    df = pd.DataFrame(data=[str_defib.split(';')], columns=titles)
+    df_defib = df_defib.append(df, ignore_index=True)
+
+df_defib['longitude'] = df_defib['longitude'].apply(lambda x: x.replace(',','.'))
+df_defib['latitude'] = df_defib['latitude'].apply(lambda x: x.replace(',','.'))
+df_defib['longitude'] = pd.to_numeric(df_defib['longitude'])
+df_defib['latitude'] = pd.to_numeric(df_defib['latitude'])
+df_defib['dist_x'] = (df_defib['longitude'] - lon) * np.cos((lat + df_defib['latitude'])/2)
+df_defib['dist_y'] = df_defib['latitude'] - lat
+df_defib['distance'] = 6371*(df_defib['dist_x']**2 + df_defib['dist_y']**2)**0.5
+closest_defib = df_defib[df_defib['distance']==min(df_defib['distance'])]['name'].values[0]
+
+print(closest_defib)
